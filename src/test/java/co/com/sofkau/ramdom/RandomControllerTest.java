@@ -84,4 +84,53 @@ class RandomControllerTest {
     }
 
 
+    @Test
+    void put(){
+
+        var request = new RequestDTO();
+        request.setList("rrrr,www,qqq,eee");
+
+        var random = new Random();
+        random.setId("randomId");
+        random.setDate(LocalDate.now().toString());
+        random.setOriginalList("rrrr,www,qqq,eee");
+        random.setRandomList("qqq,www,eee,rrrr");
+
+        when(repository.findById(any(String.class))).thenReturn(Mono.just(random));
+        when(repository.save(any())).thenReturn(Mono.just(random));
+
+        webTestClient.put()
+                .uri("/random/randomId")
+                .body(Mono.just(request), RequestDTO.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Random.class)
+                .consumeWith(bod -> {
+                    var body = bod.getResponseBody();
+                    assert body != null;
+                });
+
+        Mockito.verify(repository).save(any());
+        Mockito.verify(repository).findById("randomId");
+
+
+    }
+
+    @Test
+    void delete(){
+        var request = new RequestDTO();
+        request.setList("rrrr,www,qqq,eee");
+
+        when(repository.deleteById(any(String.class))).thenReturn(Mono.empty());
+
+        webTestClient.delete()
+                .uri("/random/randomId")
+                .exchange()
+                .expectStatus().isOk();
+
+
+        Mockito.verify(repository).deleteById("randomId");
+
+    }
+
 }
