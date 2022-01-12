@@ -28,7 +28,7 @@ public class RandomController {
     public Mono<Random> post(@RequestBody RequestDTO request) {
         return Mono.just(new Random())
                 .map(entity -> {
-                    entity.setDate(LocalDate.now());
+                    entity.setDate(LocalDate.now().toString());
                     entity.setOriginalList(request.getList());
                     return entity;
                 })
